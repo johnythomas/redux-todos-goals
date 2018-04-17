@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Todos Goals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div>
+    <h1>Todo List</h1>
+    <input id="todo" type="text" placeholder="Add Todo" />
+    <button id="todoBtn">Add Todo</button>
+    <ul id="todos">
+      <li></li>
+    </ul>
+  </div>
+  <div>
+    <h1>Goals List</h1>
+    <input id="goal" type="text" placeholder="Add Goal" />
+    <button id="goalBtn">Add Goal</button>
+    <ul id="goals">
+      <li></li>
+    </ul>
+  </div>
+
+  <script type="text/javascript">
+    const ADD_TODO = 'ADD_TODO';
+    const REMOVE_TODO = "REMOVE_TODO";
+    const TOGGLE_TODO = 'TOGGLE_TODO';
+    const ADD_GOAL = 'ADD_GOAL';
+    const REMOVE_GOAL = 'REMOVE_GOAL';
+
+    function addTodoAction(todo) {
+      return {
+        type: ADD_TODO,
+        todo
+      };
+    }
+
+    function removeTodoAction(id) {
+      return {
+        type: REMOVE_TODO,
+        id
+      };
+    }
+
+    function toggleTodoAction(id) {
+      return {
+        type: TOGGLE_TODO,
+        id
+      };
+    }
+
+    function addGoalAction(goal) {
+      return {
+        type: ADD_GOAL,
+        goal,
+      }
+    }
+
+    function removeGoalAction(id) {
+      return {
+        type: REMOVE_GOAL,
+        id,
+      };
+    }
+
+    function todos(state = [], action) {
+      switch (action.type) {
+        case ADD_TODO:
+          return state.concat(action.todo);
+        case REMOVE_TODO:
+          return state.filter((todo) => todo.id !== action.id);
+        case TOGGLE_TODO:
+          return state.map(todo => todo.id !== action.id
+            ? todo
+            : Object.assign({}, todo, { complete: !todo.complete }))
+        default:
+          return state;
+      }
+    }
+
+    function goals(state = [], action) {
+      switch (action.type) {
+        case ADD_GOAL:
+          return state.concat([action.goal]);
+        case REMOVE_GOAL:
+          return state.filter(goal => goal.id !== action.id);
+        default:
+          return state;
+      }
+    }
+
+    function app(state = {}, action) {
+      return {
+        todos: todos(state.todo, action),
+        goals: goals(state.goal, action)
+      };
+    }
+
+    function createStore(reducer) {
+
+      let state;
+      let listeners = [];
+
+      const getState = () => state;
+
+      const subscribe = (listener) => {
+        listeners.push(listener);
+        return () => {
+          listeners = listeners.filter((l) => l !== listener);
+        }
+      };
+
+      const dispatch = (action) => {
+        state = reducer(state, action);
+        listeners.forEach(listener => listener());
+      };
+
+      return {
+        getState,
+        subscribe,
+        dispatch
+      };
+    }
+
+  </script>
+</body>
+
+</html>
