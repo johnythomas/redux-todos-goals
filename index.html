@@ -27,6 +27,11 @@
   </div>
 
   <script type="text/javascript">
+
+    function generateId() {
+      return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
+    }
+
     const ADD_TODO = 'ADD_TODO';
     const REMOVE_TODO = "REMOVE_TODO";
     const TOGGLE_TODO = 'TOGGLE_TODO';
@@ -127,6 +132,38 @@
       };
     }
 
+    const store = createStore(app)
+    store.subscribe(() => {
+      console.log('The new state is: ', store.getState())
+    })
+
+    function addTodo() {
+      const input = document.getElementById('todo');
+      const name = input.value;
+      input.value = '';
+
+      store.dispatch(addTodoAction({
+        name,
+        complete: false,
+        id: generateId()
+      }))
+    }
+
+    function addGoal() {
+      const input = document.getElementById('goal');
+      const name = input.value;
+      input.value = '';
+
+      store.dispatch(addGoalAction({
+        id: generateId(),
+        name
+      }))
+    }
+
+    document.getElementById('todoBtn')
+      .addEventListener('click', addTodo);
+    document.getElementById('goalBtn')
+      .addEventListener('click', addGoal);
   </script>
 </body>
 
