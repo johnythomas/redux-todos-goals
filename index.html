@@ -101,8 +101,8 @@
 
     function app(state = {}, action) {
       return {
-        todos: todos(state.todo, action),
-        goals: goals(state.goal, action)
+        todos: todos(state.todos, action),
+        goals: goals(state.goals, action)
       };
     }
 
