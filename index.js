@@ -92,12 +92,21 @@ const checker = store => next => action => {
   return next(action)
 }
 
+const logger = store => next => action => {
+  console.group(action.type)
+  console.log("The action: ", action)
+  const result = next(action)
+  console.log("The new state is: ", store.getState())
+  console.groupEnd()
+  return result
+}
+
 const store = Redux.createStore(
   Redux.combineReducers({
     todos,
     goals
   }),
-  Redux.applyMiddleware(checker)
+  Redux.applyMiddleware(checker, logger)
 )
 
 function addTodo() {
