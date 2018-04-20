@@ -76,7 +76,7 @@ function goals(state = [], action) {
   }
 }
 
-function checkAndDispatch(store, action) {
+const checker = store => next => action => {
   if (
     action.type === ADD_TODO &&
     action.todo.name.toLowerCase().includes("bitcoin")
@@ -89,31 +89,23 @@ function checkAndDispatch(store, action) {
   ) {
     return alert("Nope. That's a bad idea")
   }
-  return store.dispatch(action)
+  return next(action)
 }
 
 const store = Redux.createStore(
   Redux.combineReducers({
     todos,
     goals
-  })
+  }),
+  Redux.applyMiddleware(checker)
 )
-
-store.subscribe(() => {
-  const { goals, todos } = store.getState()
-  document.getElementById("goals").innerHTML = ""
-  document.getElementById("todos").innerHTML = ""
-  goals.forEach(addGoalToDOM)
-  todos.forEach(addTodoToDOM)
-})
 
 function addTodo() {
   const input = document.getElementById("todo")
   const name = input.value
   input.value = ""
 
-  checkAndDispatch(
-    store,
+  store.dispatch(
     addTodoAction({
       name,
       complete: false,
@@ -127,8 +119,7 @@ function addGoal() {
   const name = input.value
   input.value = ""
 
-  checkAndDispatch(
-    store,
+  store.dispatch(
     addGoalAction({
       id: generateId(),
       name
@@ -152,7 +143,7 @@ function addTodoToDOM(todo) {
   node.setAttribute("id", todo.id)
 
   const removeBtn = createRemoveButton(() => {
-    checkAndDispatch(store, removeTodoAction(todo.id))
+    store.dispatch(removeTodoAction(todo.id))
   })
 
   node.appendChild(text)
@@ -160,7 +151,7 @@ function addTodoToDOM(todo) {
   node.style.textDecoration = todo.complete ? "line-through" : "none"
 
   node.addEventListener("click", () => {
-    checkAndDispatch(store, toggleTodoAction(todo.id))
+    store.dispatch(toggleTodoAction(todo.id))
   })
 
   document.getElementById("todos").appendChild(node)
@@ -171,7 +162,7 @@ function addGoalToDOM(goal) {
   const text = document.createTextNode(goal.name)
 
   const removeBtn = createRemoveButton(() => {
-    checkAndDispatch(store, removeGoalAction(goal.id))
+    store.dispatch(removeGoalAction(goal.id))
   })
 
   node.appendChild(text)
@@ -179,3 +170,11 @@ function addGoalToDOM(goal) {
 
   document.getElementById("goals").appendChild(node)
 }
+
+store.subscribe(() => {
+  const { goals, todos } = store.getState()
+  document.getElementById("goals").innerHTML = ""
+  document.getElementById("todos").innerHTML = ""
+  goals.forEach(addGoalToDOM)
+  todos.forEach(addTodoToDOM)
+})
