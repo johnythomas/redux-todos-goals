@@ -52,6 +52,11 @@
 
       removeTodo = (todo) => {
         this.props.store.dispatch(removeTodoAction(todo.id))
+        API.deleteTodo(todo.id)
+          .catch(() => {
+            this.props.store.dispatch(addTodoAction(todo))
+            alert("An error occured. Try again.")
+          })
       }
 
       toggleItem = (id) => {
@@ -95,6 +100,11 @@
 
       removeGoal = (goal) => {
         this.props.store.dispatch(removeGoalAction(goal.id))
+        API.deleteGoal(goal.id)
+          .catch(() => {
+            this.props.store.dispatch(addGoalAction(goal))
+            alert("An error occured. Try again.")
+          })
       }
 
       render() {
@@ -125,7 +135,7 @@
         Promise.all([
           API.fetchTodos(),
           API.fetchGoals()
-        ]).then(([goals, todos]) => {
+        ]).then(([todos, goals]) => {
           store.dispatch(receiveDataAction(todos, goals))
         })
 
@@ -134,7 +144,10 @@
 
       render() {
         const { store } = this.props
-        const { goals, todos } = store.getState()
+        const { goals, todos, loading } = store.getState()
+        if (loading) {
+          return <h3>Loading</h3>
+        }
         return (
           <div>
             <Todos todos={todos} store={this.props.store} />
