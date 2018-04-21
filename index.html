@@ -9,19 +9,6 @@
 </head>
 
 <body>
-  <div>
-    <h1>Todo List</h1>
-    <input id="todo" type="text" placeholder="Add Todo" />
-    <button id="todoBtn">Add Todo</button>
-    <ul id="todos" />
-  </div>
-  <div>
-    <h1>Goals List</h1>
-    <input id="goal" type="text" placeholder="Add Goal" />
-    <button id="goalBtn">Add Goal</button>
-    <ul id="goals" />
-  </div>
-  <hr/>
   <div id="app"></div>
 
   <script src="https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js"></script>
@@ -34,7 +21,12 @@
       <ul>
         {props.items.map(item => (
           <li key={item.id}>
-            <span>{item.name}</span>
+            <span
+              onClick={() => props.toggle && props.toggle(item.id)}
+              style={{textDecoration: item.complete ? 'line-through' : 'none'}}
+            >
+              {item.name}
+            </span>
             <button onClick={() => props.remove(item)}>
               X
             </button>
@@ -61,6 +53,10 @@
         this.props.store.dispatch(removeTodoAction(todo.id))
       }
 
+      toggleItem = (id) => {
+        this.props.store.dispatch(toggleTodoAction(id))
+      }
+
       render() {
         return (
           <div>
@@ -76,6 +72,7 @@
             <List 
               items={this.props.todos} 
               remove={this.removeTodo}
+              toggle={this.toggleItem}
             />
           </div>
         )
