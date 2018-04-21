@@ -30,25 +30,44 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"></script>
   <script type="text/javascript" src="index.js"></script>
   <script type="text/babel">
-    const List = (props) => {
-      return (
-        <ul>
-          <li>List</li>  
-        </ul>
-      )
-    }
+    const List = props => (
+      <ul>
+        <li>List</li>
+      </ul>
+    )
 
     class Todos extends React.Component {
+      addItem = e => {
+        e.preventDefault()
+        const name = this.input.value
+        this.input.value = ""
+        this.props.store.dispatch(
+          addTodoAction({
+            name,
+            complete: false,
+            id: generateId()
+          })
+        )
+      }
+
       render() {
         return (
           <div>
-            TODOS
+            <h1>Todo List</h1>
+            <input
+              type="text"
+              placeholder="Add Todo"
+              ref={input => {
+                this.input = input
+              }}
+            />
+            <button onClick={this.addItem}>Add Todo</button>
             <List />
           </div>
         )
       }
     }
-    
+
     class Goals extends React.Component {
       render() {
         return (
@@ -62,16 +81,16 @@
 
     class App extends React.Component {
       render() {
-        return(
+        return (
           <div>
-            <Todos />
-            <Goals />   
+            <Todos store={this.props.store} />
+            <Goals store={this.props.store} />
           </div>
         )
       }
     }
 
-    ReactDOM.render(<App />, document.getElementById("app"))
+    ReactDOM.render(<App store={store} />, document.getElementById("app"))
   </script>
 </body>
 
