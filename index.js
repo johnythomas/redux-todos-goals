@@ -67,6 +67,26 @@ function handleDeleteTodo(todo) {
   }
 }
 
+function handleAddGoal(name, cb) {
+  return dispatch =>
+    API.saveGoal(name)
+      .then(goal => {
+        dispatch(addGoalAction(goal))
+        cb()
+      })
+      .catch(() => alert("There was an error. Try again"))
+}
+
+function handleDeleteGoal(goal) {
+  return dispatch => {
+    dispatch(removeGoalAction(goal.id))
+    API.deleteGoal(goal.id).catch(() => {
+      dispatch(addGoalAction(goal))
+      alert("An error occured. Try again.")
+    })
+  }
+}
+
 function todos(state = [], action) {
   switch (action.type) {
     case ADD_TODO:
