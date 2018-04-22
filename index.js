@@ -56,6 +56,17 @@ function receiveDataAction(todos, goals) {
   }
 }
 
+function handleDeleteTodo(todo) {
+  return dispatch => {
+    dispatch(removeTodoAction(todo.id))
+
+    return API.deleteTodo(todo.id).catch(() => {
+      dispatch(addTodoAction(todo))
+      alert("An error occured. Try again.")
+    })
+  }
+}
+
 function todos(state = [], action) {
   switch (action.type) {
     case ADD_TODO:
@@ -129,5 +140,5 @@ const store = Redux.createStore(
     goals,
     loading
   }),
-  Redux.applyMiddleware(checker, logger)
+  Redux.applyMiddleware(ReduxThunk.default, checker, logger)
 )
